@@ -1,0 +1,17 @@
+{
+  "name": "house-spider",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "fuguohong",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "bluebird": "^3.7.2",
+    "cheerio": "^1.0.0-rc.5",
+    "mongoose": "^5.12.2"
+  }
+}
