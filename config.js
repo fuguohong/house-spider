@@ -8,7 +8,7 @@ module.exports = {
     // 跳过这之前的数据
     offset: 'https://cq.lianjia.com/ershoufang/106107695902.html',
     // 同时爬取几个详情
-    detailBatch: 5,
+    concurrence: 5,
     // 请求间隔ms，在这基础上随机+-2000ms
     requestInterval: 2000
   }
