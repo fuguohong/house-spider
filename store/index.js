@@ -5,6 +5,7 @@ const path = require('path')
 module.exports = class MongoStore {
   constructor (conn) {
     this.connStr = conn
+    this.count = 0
   }
 
   async init () {
@@ -17,12 +18,13 @@ module.exports = class MongoStore {
       this.client.model(path.basename(m, '.js'), require(path.join(__dirname, './models', m)))
     }
     this.models = this.client.models
-    await this.models.xiaoqu.create({
-      name: '龙湖',
-      avgPrice: 12000
-    })
   }
 
+  saveDistrict (data) {
+    this.count++
+    data.cityName = '重庆'
+    return this.models.district.create(data)
+  }
 }
 
 

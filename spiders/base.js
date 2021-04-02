@@ -16,6 +16,10 @@ module.exports = class BaseSpider {
     this.jobs = []
   }
 
+  init () {
+    return this.store.init()
+  }
+
   wait () {
     const random = (Math.random() * 3000) - 1500
     const waitTime = this.config.requestInterval + random
@@ -36,6 +40,7 @@ module.exports = class BaseSpider {
   }
 
   async start () {
+    await this.init()
     let url = this.config.startUrl
     while (url) {
       try {
@@ -51,44 +56,46 @@ module.exports = class BaseSpider {
   }
 
   async request (url, config) {
+    const headers = this.getHeader()
+    const baseConfig = {
+      baseURL: this.config.baseUrl,
+      headers,
+      responseType: 'text'
+    }
+    Object.assign(baseConfig, config)
     let result = {}
-    if(this.running >= this.maxJobs) {
+    if (this.running >= this.maxJobs) {
       return new Promise(resolve => {
-        this.jobs.push(()=>{
-          this._doRequest(url,config,result)
-            .then(()=>resolve(result.res))
+        this.jobs.push(() => {
+          this._doRequest(url, baseConfig, result)
+            .then(() => resolve(result.res))
         })
       })
-    }else {
-      await this._doRequest(url,config,result)
+    } else {
+      await this._doRequest(url, baseConfig, result)
     }
     return result.res
   }
 
-  async _doRequest(url, config, result){
+  async _doRequest (url, config, result) {
     this.running++
     console.log('running:', this.running)
+    console.log('requesting:', url)
     await this.wait()
-    const res = await axios.get(url,config)
-    if(this.jobs.length){
+    const res = await axios.get(url, config)
+    this.running--
+    if (this.jobs.length) {
       const job = this.jobs.shift()
       job()
     }
-    this.running--
     result.res = res
   }
 
   async requestList (url) {
-    const headers = this.getHeader()
-    const res = await this.request(url, {
-      baseURL: this.config.baseUrl,
-      headers,
-      responseType: 'document'
-    })
+    const res = await this.request(url)
     this.lastUrl = url
     this.pageCount++
-    const data = await this.processList(res.data)
-    await this.store.saveData(data)
+    await this.processData(res.data)
   }
 
   getNext () {
