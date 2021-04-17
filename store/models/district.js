@@ -9,4 +9,6 @@ module.exports = new Schema({
       name: String,
       code: String
     }]
+},{
+  timestamps: true
 })

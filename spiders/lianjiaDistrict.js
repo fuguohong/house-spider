@@ -11,14 +11,16 @@ module.exports = class LianjiaDistrict extends BaseSpider {
     if (this._index === this.districts.length - 1) {
       return
     }
-    return this.districts[ ++this._index ].href
+    this._index++
+    return this.districts[ this._index ].href
   }
 
-  async processData (resData) {
-    const $ = cheerio.load(resData)
+  async processData (res) {
+    const $ = cheerio.load(res.data)
     if (!this.districts) {
       const as = $('div[data-role=ershoufang]>div:first').children('a').toArray()
       this.districts = as.map(a => ({
+        cityName: '重庆',
         href: a.attribs.href,
         code: a.attribs.href.split('/')[ 2 ],
         name: a.children[ 0 ].data
