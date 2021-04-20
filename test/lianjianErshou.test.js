@@ -8,19 +8,20 @@ const store = new Store(config.mongoConn)
 
 const spider = new Spider(config.lianjiaErshou, store)
 const communityHtml = fs.readFileSync(path.join(__dirname, 'community.html'))
-const ershouHtml = fs.readFileSync(path.join(__dirname,'ershou.html'))
+const ershouHtml = fs.readFileSync(path.join(__dirname, 'ershou.html'))
 
 async function main () {
   await spider.init()
-  // const result = await spider.processHouse({
-  //   config: {
-  //     url: '/xiaoqu/2411048614076/',
-  //     baseURL: 'https://sz.lianjia.com'
-  //   },
-  //   data: ershouHtml
-  // })
+  const result = await spider.processCommunity({
+    config: {
+      url: '/xiaoqu/2411048614076/',
+      baseURL: 'https://sz.lianjia.com'
+    },
+    status: 200,
+    data: communityHtml
+  })
 
-  const result = await spider.getCommunityId('/xiaoqu/3620035116289697/')
+  // const result = await spider.getCommunityId('/xiaoqu/3620035116289697/')
   console.log(result)
 }
 

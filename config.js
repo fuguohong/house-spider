@@ -14,7 +14,7 @@ module.exports = {
   lianjiaErshou: {
     baseUrl: 'http://cq.lianjia.com',
     // 开始爬取页面
-    startUrl: '/ershoufang/dazhulin/pg50co32sf1/',
+    startUrl: '/ershoufang/danzishi/pg36co32sf1/',
     // startDst: 0,
     // startRegion: 0,
     // startPage: '32',
@@ -22,8 +22,8 @@ module.exports = {
     // 跳过这之前的数据
     // offset: 'https://cq.lianjia.com/ershoufang/106107695902.html',
     // 同时爬取几个详情
-    concurrence: 5,
+    concurrence: 10,
     // 请求间隔ms，在这基础上随机+-2000ms
-    requestInterval: 3000
+    requestInterval: 2000
   }
 }

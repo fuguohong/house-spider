@@ -81,7 +81,7 @@ module.exports = class LianjiaErshou extends BaseSpider {
     const $ = cheerio.load(res.data)
     this.processPage($)
     const a = $('ul.sellListContent>li div.title>a').toArray()
-    let houseArray = await Promise.all(a.map(async(x, i) => {
+    await Promise.all(a.map(async(x, i) => {
       const url = x.attribs.href
       const hid = url.slice(url.lastIndexOf('/') + 1, -5)
       const exists = await this.store.houseExists(hid)
@@ -89,11 +89,13 @@ module.exports = class LianjiaErshou extends BaseSpider {
         return null
       }
       const res = await this.request(url)
-      return this.processHouse(res)
+      const house = await this.processHouse(res)
+      await this.store.saveHouse(house)
+      return house
     }))
-    console.log('当前列表页数据已爬完，开始存储数据')
-    houseArray = houseArray.filter(h => h)
-    await this.store.saveHouse(houseArray)
+    // console.log('当前列表页数据已爬完，开始存储数据', houseArray.length)
+    // houseArray = houseArray.filter(h => h)
+    // await this.store.saveHouse(houseArray)
   }
 
   async processHouse (res) {
@@ -230,7 +232,13 @@ module.exports = class LianjiaErshou extends BaseSpider {
     }
     const $ = cheerio.load(res.data)
     const infos = $('span.xiaoquInfoContent').map((_, i) => i.children[ 0 ].data).toArray()
-    const locationTmp = $('span.xiaoquInfoContent>span').attr('xiaoqu').split(',')
+    let locationTmp = $('span.xiaoquInfoContent>span').attr('xiaoqu')
+    if (!locationTmp) {
+      const scripts = $('script[type=\'text/javascript\']:eq(3)').html()
+      locationTmp = scripts.match(/resblockPosition:'(.+)',/)[ 1 ]
+      // console.log(locationTmp)
+    }
+    locationTmp = locationTmp.split(',')
     const location = `${locationTmp[ 1 ].slice(0, -1)},${locationTmp[ 0 ].slice(1)}`
     const idTmp = res.config.url.split('/')
     const url = res.config.url.startsWith('http') ? res.config.url : res.config.baseURL + res.config.url

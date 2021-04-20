@@ -5,7 +5,7 @@ const path = require('path')
 module.exports = class MongoStore {
   constructor (conn) {
     this.connStr = conn
-    this.counts ={
+    this.counts = {
       house: 0,
       community: 0
     }
@@ -28,27 +28,33 @@ module.exports = class MongoStore {
     return this.models.district.create(data)
   }
 
-  async getDistricts(){
+  async getDistricts () {
     const data = await this.models.district.find()
-    return data.map(d=>d.toObject())
+    return data.map(d => d.toObject())
   }
 
-  communityExists(cid){
-    return this.models.community.findOne({cid})
+  communityExists (cid) {
+    return this.models.community.findOne({ cid })
   }
 
-  saveCommunity(data){
+  saveCommunity (data) {
     this.counts.community++
     return this.models.community.create(data)
   }
 
-  saveHouse(data){
-    this.counts.house += data.length
-    return this.models.house.insertMany(data)
+  saveHouse (data) {
+    if (Array.isArray(data)) {
+      this.counts.house += data.length
+      return this.models.house.insertMany(data)
+    } else {
+      this.counts.house += 1
+      return this.models.house.create(data)
+    }
+
   }
 
-  houseExists(hid){
-    return this.models.community.findOne({hid})
+  houseExists (hid) {
+    return this.models.community.findOne({ hid })
   }
 }
 
