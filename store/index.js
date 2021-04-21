@@ -54,7 +54,7 @@ module.exports = class MongoStore {
   }
 
   houseExists (hid) {
-    return this.models.community.findOne({ hid })
+    return this.models.house.findOne({ hid })
   }
 }
 

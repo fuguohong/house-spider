@@ -6,15 +6,20 @@ module.exports = class LianjiaErshou extends BaseSpider {
   async init () {
     await super.init()
     this.districts = await this.store.getDistricts()
+    this.small = true
     if (this.config.startUrl) {
       this.startUrl = this.config.startUrl
       const re = /.+\/(\w+)\/.+/
       const code = this.startUrl.match(re)[ 1 ]
       this.runningComunity = new Map()
+      const gtArea = this.startUrl.match(/ba(\d+)ea\d+\/?$/)[ 1 ]
+      if (gtArea !== '0') {
+        this.small = false
+      }
 
       for (let i = 0; i < this.districts.length; i++) {
         let dst = this.districts[ i ]
-        for (let j = 0; i < dst.regions.length; j++) {
+        for (let j = 0; j < dst.regions.length; j++) {
           if (dst.regions[ j ].code === code) {
             this.i = i
             this.subI = j
@@ -45,8 +50,9 @@ module.exports = class LianjiaErshou extends BaseSpider {
   }
 
   buildPageUrl (pageNum) {
-    return `/ershoufang/${this.currentRegion.code}/${pageNum ? 'pg' +
-      this.config.startPage : ''}co32sf1/`
+    return `/ershoufang/${this.currentRegion.code}/${pageNum ? 'pg' + pageNum : ''}co32sf1${this.small
+      ? 'ba0ea100'
+      : 'ba100ea10000'}/`
   }
 
   processPage (dom) {
@@ -57,13 +63,20 @@ module.exports = class LianjiaErshou extends BaseSpider {
     const pageDom = dom('div.house-lst-page-box.page-box')
     const pageData = JSON.parse(pageDom.attr('page-data'))
     if (pageData.totalPage > pageData.curPage) {
-      this.nextPage = pageDom.attr('page-url').replace('{page}', pageData.curPage + 1)
+      this.nextPage = this.buildPageUrl(pageData.curPage + 1)
+        // pageDom.attr('page-url').replace('{page}', pageData.curPage + 1)
+      return
+    }
+    if (this.small) {
+      this.small = false
+      this.nextPage = this.buildPageUrl()
       return
     }
     if (this.subI < this.currentDst.regions.length - 1) {
       this.subI++
       this.currentRegion = this.currentDst.regions[ this.subI ]
       this.nextPage = this.buildPageUrl()
+      this.small = true
       return
     }
     if (this.i < this.districts.length - 1) {
@@ -72,6 +85,7 @@ module.exports = class LianjiaErshou extends BaseSpider {
       this.currentDst = this.districts[ this.i ]
       this.currentRegion = this.currentDst.regions[ this.subI ]
       this.nextPage = this.buildPageUrl()
+      this.small = true
       return
     }
     this.nextPage = ''
