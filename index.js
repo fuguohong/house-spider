@@ -14,7 +14,7 @@ spider.start()
     process.exit(0)
   }).catch(e => {
   logger.error('爬取出错，url:' + spider.lastUrl)
-  logger.error(e)
+  logger.error('%o', e)
   process.exit(2)
 })
 

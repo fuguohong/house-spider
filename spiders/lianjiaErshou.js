@@ -7,6 +7,7 @@ module.exports = class LianjiaErshou extends BaseSpider {
     await super.init()
     this.small = true
     this.i = 0
+    this.runningComunity = new Map()
 
     const districts = await this.store.getDistricts()
     this.codes = []
@@ -22,7 +23,6 @@ module.exports = class LianjiaErshou extends BaseSpider {
       this.startUrl = this.config.startUrl
       const re = /.+\/(\w+)\/.+/
       const code = this.startUrl.match(re)[ 1 ]
-      this.runningComunity = new Map()
       const gtArea = this.startUrl.match(/ba(\d+)ea\d+\/?$/)[ 1 ]
       if (gtArea !== '0') {
         this.small = false
