@@ -19,7 +19,7 @@ module.exports = {
   lianjiaErshou: {
     baseUrl: 'http://cq.lianjia.com',
     // 开始爬取页面
-    startUrl: '/ershoufang/daping/pg31co32sf1ba0ea100/',
+    // startUrl: '/ershoufang/daping/pg31co32sf1ba0ea100/',
     maxPage: 0,
     // 同时爬取几个详情
     concurrence: 10,

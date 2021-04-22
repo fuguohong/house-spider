@@ -28,10 +28,16 @@ module.exports = class LianjiaDistrict extends BaseSpider {
       this._index = -1
     } else {
       const as = $('div[data-role=ershoufang]>div:eq(1)').children('a').toArray()
-      const regions = as.map(a => ({
-        code: a.attribs.href.split('/')[ 2 ],
-        name: a.children[ 0 ].data
-      }))
+      let regions
+      if (as.length) {
+        regions = as.map(a => ({
+          code: a.attribs.href.split('/')[ 2 ],
+          name: a.children[ 0 ].data
+        }))
+      } else {
+        regions = [{ ...this.districts[ this._index ] }]
+      }
+
       await this.store.saveDistrict({
         ...this.districts[ this._index ],
         regions

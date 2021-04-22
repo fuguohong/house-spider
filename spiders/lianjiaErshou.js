@@ -1,13 +1,23 @@
 const cheerio = require('cheerio')
 const BaseSpider = require('./base')
-const logger = require('../logger')
 
 module.exports = class LianjiaErshou extends BaseSpider {
 
   async init () {
     await super.init()
-    this.districts = await this.store.getDistricts()
     this.small = true
+    this.i = 0
+
+    const districts = await this.store.getDistricts()
+    this.codes = []
+    for (let d of districts) {
+      for (let sd of d.regions) {
+        if (!this.codes.includes(sd.code)) {
+          this.codes.push(sd.code)
+        }
+      }
+    }
+
     if (this.config.startUrl) {
       this.startUrl = this.config.startUrl
       const re = /.+\/(\w+)\/.+/
@@ -18,27 +28,16 @@ module.exports = class LianjiaErshou extends BaseSpider {
         this.small = false
       }
 
-      for (let i = 0; i < this.districts.length; i++) {
-        let dst = this.districts[ i ]
-        for (let j = 0; j < dst.regions.length; j++) {
-          if (dst.regions[ j ].code === code) {
-            this.i = i
-            this.subI = j
-            this.currentDst = dst
-            this.currentRegion = dst.regions[ j ]
-            return
-          }
+      for (let i = 0; i < this.codes.length; i++) {
+        if (code === this.codes[ i ]) {
+          this.i = i
+          return
         }
       }
       throw new Error('未能解析startUrl')
     } else {
-      this.i = 0
-      this.subI = 0
-      this.currentDst = this.districts[ 0 ]
-      this.currentRegion = this.currentDst.regions[ 0 ]
       this.startUrl = this.buildPageUrl()
     }
-
   }
 
   getNext () {
@@ -47,13 +46,11 @@ module.exports = class LianjiaErshou extends BaseSpider {
     if (!next.endsWith('/')) {
       next = next + '/'
     }
-    logger.info('获取下一页：%s  当前区：%s(%d)，当前地域：%s(%d)',
-      next, this.currentDst.name, this.i, this.currentRegion.name, this.subI)
     return next
   }
 
   buildPageUrl (pageNum) {
-    return `/ershoufang/${this.currentRegion.code}/${pageNum ? 'pg' + pageNum : ''}co32sf1${this.small
+    return `/ershoufang/${this.codes[ this.i ]}/${pageNum ? 'pg' + pageNum : ''}co32sf1${this.small
       ? 'ba0ea100'
       : 'ba100ea10000'}/`
   }
@@ -78,21 +75,8 @@ module.exports = class LianjiaErshou extends BaseSpider {
       this.nextPage = this.buildPageUrl()
       return
     }
-    if (this.subI < this.currentDst.regions.length - 1) {
-      this.subI++
-      this.currentRegion = this.currentDst.regions[ this.subI ]
-      this.small = true
-      this.nextPage = this.buildPageUrl()
-      return
-    }
-    if (this.i < this.districts.length - 1) {
+    if (this.i < this.codes.length - 1) {
       this.i++
-      this.subI = 0
-      this.currentDst = this.districts[ this.i ]
-      this.currentRegion = this.currentDst.regions[ this.subI ]
-      if (!this.currentRegion) {
-        this.currentRegion = this.currentDst
-      }
       this.small = true
       this.nextPage = this.buildPageUrl()
       return

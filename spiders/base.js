@@ -100,6 +100,7 @@ module.exports = class BaseSpider {
   }
 
   async requestList (url) {
+    logger.info('爬取列表页:%s', url)
     const res = await this.request(url)
     this.lastUrl = url
     this.pageCount++
