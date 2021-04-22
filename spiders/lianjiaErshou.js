@@ -1,5 +1,6 @@
 const cheerio = require('cheerio')
 const BaseSpider = require('./base')
+const logger = require('../logger')
 
 module.exports = class LianjiaErshou extends BaseSpider {
 
@@ -46,6 +47,8 @@ module.exports = class LianjiaErshou extends BaseSpider {
     if (!next.endsWith('/')) {
       next = next + '/'
     }
+    logger.info('获取下一页：%s  当前区：%s(%d)，当前地域：%s(%d)',
+      next, this.currentDst.name, this.i, this.currentRegion.name, this.subI)
     return next
   }
 
@@ -117,7 +120,6 @@ module.exports = class LianjiaErshou extends BaseSpider {
       await this.store.saveHouse(house)
       return house
     }))
-    // console.log('当前列表页数据已爬完，开始存储数据', houseArray.length)
     // houseArray = houseArray.filter(h => h)
     // await this.store.saveHouse(houseArray)
   }
@@ -146,10 +148,12 @@ module.exports = class LianjiaErshou extends BaseSpider {
     let putawayAt = transactionDom.eq(0).text()
     putawayAt = putawayAt.length > 4 ? new Date(putawayAt) : null
 
+    const navDom = $('div.fl.l-txt>a')
+
     const data = {
-      cityName: this.currentDst.cityName,
-      district: this.currentDst.name,
-      region: this.currentRegion.name,
+      cityName: navDom.eq(1).text().trim().slice(0, -3),
+      district: navDom.eq(2).text().trim().slice(0, -3),
+      region: navDom.eq(3).text().trim().slice(0, -3),
       // 房子id
       hid: hid,
       // 链接
@@ -260,17 +264,18 @@ module.exports = class LianjiaErshou extends BaseSpider {
     if (!locationTmp) {
       const scripts = $('script[type=\'text/javascript\']:eq(3)').html()
       locationTmp = scripts.match(/resblockPosition:'(.+)',/)[ 1 ]
-      // console.log(locationTmp)
     }
     locationTmp = locationTmp.split(',')
     const location = `${locationTmp[ 1 ].slice(0, -1)},${locationTmp[ 0 ].slice(1)}`
     const idTmp = res.config.url.split('/')
     const url = res.config.url.startsWith('http') ? res.config.url : res.config.baseURL + res.config.url
 
+    const navDom = $('div.fl.l-txt>a')
+
     const data = {
-      cityName: this.currentDst.cityName,
-      district: this.currentDst.name,
-      region: this.currentRegion.name,
+      cityName: navDom.eq(1).text().trim().slice(0, -2),
+      district: navDom.eq(2).text().trim().slice(0, -2),
+      region: navDom.eq(3).text().trim().slice(0, -2),
       url: url,
       cid: idTmp[ idTmp.length - 2 ],
       name: $('h1.detailTitle').text(),

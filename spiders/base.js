@@ -1,4 +1,5 @@
 const axios = require('axios')
+const logger = require('../logger')
 
 module.exports = class BaseSpider {
   constructor (config, store) {
@@ -49,15 +50,8 @@ module.exports = class BaseSpider {
     await this.init()
     let url = this.startUrl
     while (url) {
-      try {
-        console.log('开始爬取列表页:' + url)
-        await this.requestList(url)
-        url = this.getNext()
-      } catch (e) {
-        console.error('爬取错误，失败url：' + url)
-        console.error(e)
-        process.exit(1)
-      }
+      await this.requestList(url)
+      url = this.getNext()
     }
   }
 
@@ -76,10 +70,11 @@ module.exports = class BaseSpider {
     Object.assign(baseConfig, config)
     let result = {}
     if (this.running >= this.maxJobs) {
-      return new Promise(resolve => {
+      return new Promise((resolve, reject) => {
         this.jobs.push(() => {
           this._doRequest(url, baseConfig, result)
             .then(() => resolve(result.res))
+            .catch(reject)
         })
       })
     } else {
@@ -91,13 +86,12 @@ module.exports = class BaseSpider {
   async _doRequest (url, config, result) {
     this.running++
     await this.wait()
-    console.log('requesting:', url)
+    logger.debug('requesting:%s  运行中:%d, 等待中:%d', url, this.running, this.jobs.length)
     const res = await tryAfter(() => {
       return axios.get(url, config)
     }, 5000, 3, url)
     // const res = await axios.get(url, config)
     this.running--
-    console.log('finish job.running', this.running, 'waiting join len:', this.jobs.length)
     if (this.jobs.length) {
       const job = this.jobs.shift()
       job()
@@ -130,7 +124,7 @@ function tryAfter (func, ms = 3000, maxTimes = 2, jobName) {
       let hasTimeout = false
       await new Promise(resolve1 => {
         const timer = setTimeout(() => {
-          console.warn('===== time out ' + jobName)
+          logger.warn('job time out: %s', jobName)
           hasTimeout = true
           resolve1()
         }, ms)

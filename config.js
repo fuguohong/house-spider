@@ -1,5 +1,10 @@
+const path = require('path')
+
 module.exports = {
   mongoConn: process.env.MONGO_CONN,
+  logDir: path.join(__dirname, 'logs'),
+  consoleLevel: 'debug',
+  fileLevel: 'info',
   type: 'lianjiaErshou',
   lianjiaDistrict: {
     baseUrl: 'https://cq.lianjia.com',
@@ -14,7 +19,7 @@ module.exports = {
   lianjiaErshou: {
     baseUrl: 'http://cq.lianjia.com',
     // 开始爬取页面
-    startUrl: '/ershoufang/liangping1/co32sf1ba100ea10000/',
+    startUrl: '/ershoufang/daping/pg31co32sf1ba0ea100/',
     maxPage: 0,
     // 同时爬取几个详情
     concurrence: 10,

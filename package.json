@@ -10,8 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.21.1",
-    "bluebird": "^3.7.2",
     "cheerio": "^1.0.0-rc.5",
-    "mongoose": "^5.12.2"
+    "mongoose": "^5.12.2",
+    "winston": "^3.3.3"
   }
 }
