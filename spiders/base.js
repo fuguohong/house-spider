@@ -24,7 +24,7 @@ module.exports = class BaseSpider {
   wait () {
     const random = (Math.random() * 3000) - 1500
     const waitTime = this.config.requestInterval + random
-    if (waitTime > 0) {
+    if (waitTime > 5) {
       return new Promise(resolve => {setTimeout(resolve, waitTime)})
     }
   }

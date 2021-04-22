@@ -60,12 +60,15 @@ module.exports = class LianjiaErshou extends BaseSpider {
       this.nextPage = ''
       return
     }
-    const pageDom = dom('div.house-lst-page-box.page-box')
-    const pageData = JSON.parse(pageDom.attr('page-data'))
-    if (pageData.totalPage > pageData.curPage) {
-      this.nextPage = this.buildPageUrl(pageData.curPage + 1)
+    const total = parseInt(dom('h2.total>span').text().trim())
+    if (total !== 0) {
+      const pageDom = dom('div.house-lst-page-box.page-box')
+      const pageData = JSON.parse(pageDom.attr('page-data'))
+      if (pageData.totalPage > pageData.curPage) {
+        this.nextPage = this.buildPageUrl(pageData.curPage + 1)
         // pageDom.attr('page-url').replace('{page}', pageData.curPage + 1)
-      return
+        return
+      }
     }
     if (this.small) {
       this.small = false
@@ -75,8 +78,8 @@ module.exports = class LianjiaErshou extends BaseSpider {
     if (this.subI < this.currentDst.regions.length - 1) {
       this.subI++
       this.currentRegion = this.currentDst.regions[ this.subI ]
-      this.nextPage = this.buildPageUrl()
       this.small = true
+      this.nextPage = this.buildPageUrl()
       return
     }
     if (this.i < this.districts.length - 1) {
@@ -84,8 +87,11 @@ module.exports = class LianjiaErshou extends BaseSpider {
       this.subI = 0
       this.currentDst = this.districts[ this.i ]
       this.currentRegion = this.currentDst.regions[ this.subI ]
-      this.nextPage = this.buildPageUrl()
+      if (!this.currentRegion) {
+        this.currentRegion = this.currentDst
+      }
       this.small = true
+      this.nextPage = this.buildPageUrl()
       return
     }
     this.nextPage = ''
@@ -93,6 +99,10 @@ module.exports = class LianjiaErshou extends BaseSpider {
 
   async processData (res) {
     const $ = cheerio.load(res.data)
+    const total = parseInt($('h2.total>span').text().trim())
+    if (total > 3000) {
+      throw new Error('找到大于3000条数据，无法获取全部数据，请细化搜索条件:' + res.config.url)
+    }
     this.processPage($)
     const a = $('ul.sellListContent>li div.title>a').toArray()
     await Promise.all(a.map(async(x, i) => {

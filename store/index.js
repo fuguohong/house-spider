@@ -29,7 +29,7 @@ module.exports = class MongoStore {
   }
 
   async getDistricts () {
-    const data = await this.models.district.find()
+    const data = await this.models.district.find().sort({ _id: 1 })
     return data.map(d => d.toObject())
   }
 

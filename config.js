@@ -4,22 +4,21 @@ module.exports = {
   lianjiaDistrict: {
     baseUrl: 'https://cq.lianjia.com',
     // 开始爬取页面
-    startUrl: '/ershoufang/jiangbei/',
-    // maxPage: 2,
+    // startUrl: '/ershoufang/jiangbei/',
+    startUrl: '/ershoufang/chengkouxian/',
     // 同时爬取几个详情
-    concurrence: 5,
+    // concurrence: 5,
     // 请求间隔ms，在这基础上随机+-2000ms
-    requestInterval: 2000
+    requestInterval: 0
   },
   lianjiaErshou: {
     baseUrl: 'http://cq.lianjia.com',
     // 开始爬取页面
-    // startUrl: '/ershoufang/bishan1/pg42co32sf1/',
-    startUrl: '/ershoufang/bishan1/co32sf1ba0ea100/',
+    startUrl: '/ershoufang/liangping1/co32sf1ba100ea10000/',
     maxPage: 0,
     // 同时爬取几个详情
     concurrence: 10,
-    // 请求间隔ms，在这基础上随机+-2000ms
+    // 请求间隔ms，在这基础上随机+-1500ms
     requestInterval: 2000
   }
 }
