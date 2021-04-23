@@ -1,5 +1,6 @@
 const cheerio = require('cheerio')
 const BaseSpider = require('./base')
+const logger = require('../logger')
 
 module.exports = class LianjiaErshou extends BaseSpider {
 
@@ -92,6 +93,8 @@ module.exports = class LianjiaErshou extends BaseSpider {
     }
     this.processPage($)
     const a = $('ul.sellListContent>li div.title>a').toArray()
+
+    let count = 0
     await Promise.all(a.map(async(x, i) => {
       const url = x.attribs.href
       const hid = url.slice(url.lastIndexOf('/') + 1, -5)
@@ -102,8 +105,10 @@ module.exports = class LianjiaErshou extends BaseSpider {
       const res = await this.request(url)
       const house = await this.processHouse(res)
       await this.store.saveHouse(house)
+      count++
       return house
     }))
+    logger.info('列表页爬取完成:%s  共存储房源%d个', res.config.url, count)
     // houseArray = houseArray.filter(h => h)
     // await this.store.saveHouse(houseArray)
   }

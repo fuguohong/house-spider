@@ -20,10 +20,10 @@ module.exports = {
     baseUrl: 'http://cq.lianjia.com',
     // 开始爬取页面
     // startUrl: '/ershoufang/daping/pg31co32sf1ba0ea100/',
-    maxPage: 0,
+    // maxPage: 0,
     // 同时爬取几个详情
-    concurrence: 10,
+    concurrence: 8,
     // 请求间隔ms，在这基础上随机+-1500ms
-    requestInterval: 2000
+    requestInterval: 2500
   }
 }
