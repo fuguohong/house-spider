@@ -13,9 +13,11 @@ spider.start()
     logger.info('爬取完成， 写入情况：%O', store.counts)
     process.exit(0)
   }).catch(e => {
+  logger.on('finish', () => {
+    process.exit(2)
+  })
   logger.error('爬取出错，url:' + spider.lastUrl)
-  logger.error('%o', e)
-  process.exit(2)
+  logger.error(e)
 })
 
 process.on('unhandledRejection', (reason, promise) => {

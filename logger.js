@@ -22,9 +22,6 @@ const logger = winston.createLogger({
     })
   ),
   transports: [
-    new winston.transports.Console({
-      level: config.consoleLevel
-    }),
     new winston.transports.File({
       filename: path.join(config.logDir, 'out.log'),
       level: config.fileLevel
@@ -32,6 +29,9 @@ const logger = winston.createLogger({
     new winston.transports.File({
       filename: path.join(config.logDir, 'error.log'),
       level: 'error'
+    }),
+    new winston.transports.Console({
+      level: config.consoleLevel
     })
   ]
 })
