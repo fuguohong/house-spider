@@ -2,11 +2,17 @@ const cheerio = require('cheerio')
 const BaseSpider = require('./base')
 const logger = require('../logger')
 
+const areaTypes = {
+  0: 'ba0ea80',
+  1: 'ba80ea120',
+  2: 'ba120ea10000'
+}
+
 module.exports = class LianjiaErshou extends BaseSpider {
 
   async init () {
     await super.init()
-    this.small = true
+    this.areaType = 0
     this.i = 0
     this.runningComunity = new Map()
 
@@ -25,8 +31,12 @@ module.exports = class LianjiaErshou extends BaseSpider {
       const re = /.+\/(\w+)\/.+/
       const code = this.startUrl.match(re)[ 1 ]
       const gtArea = this.startUrl.match(/ba(\d+)ea\d+\/?$/)[ 1 ]
-      if (gtArea !== '0') {
-        this.small = false
+      if (gtArea === '0') {
+        this.areaType = 0
+      } else if (gtArea === '80') {
+        this.areaType = 1
+      } else {
+        this.areaType = 2
       }
 
       for (let i = 0; i < this.codes.length; i++) {
@@ -51,9 +61,8 @@ module.exports = class LianjiaErshou extends BaseSpider {
   }
 
   buildPageUrl (pageNum) {
-    return `/ershoufang/${this.codes[ this.i ]}/${pageNum ? 'pg' + pageNum : ''}co32sf1${this.small
-      ? 'ba0ea100'
-      : 'ba100ea10000'}/`
+    const areaStr = areaTypes[ this.areaType ]
+    return `/ershoufang/${this.codes[ this.i ]}/${pageNum ? 'pg' + pageNum : ''}co32sf1${areaStr}/`
   }
 
   processPage (dom) {
@@ -71,14 +80,14 @@ module.exports = class LianjiaErshou extends BaseSpider {
         return
       }
     }
-    if (this.small) {
-      this.small = false
+    if (this.areaType < 2) {
+      this.areaType++
       this.nextPage = this.buildPageUrl()
       return
     }
     if (this.i < this.codes.length - 1) {
       this.i++
-      this.small = true
+      this.areaType = 0
       this.nextPage = this.buildPageUrl()
       return
     }
