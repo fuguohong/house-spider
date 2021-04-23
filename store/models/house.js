@@ -11,7 +11,10 @@ module.exports = new mongoose.Schema({
   // 所在区域
   region: String,
   // 房子id
-  hid: String,
+  hid: {
+    type: String,
+    index: true,
+  },
   // 链接
   url: String,
   // 标题
