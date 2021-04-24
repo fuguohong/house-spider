@@ -4,8 +4,8 @@ const logger = require('../logger')
 
 const areaTypes = {
   0: 'ba0ea80',
-  1: 'ba80ea120',
-  2: 'ba120ea10000'
+  1: 'ba80ea115',
+  2: 'ba115ea10000'
 }
 
 module.exports = class LianjiaErshou extends BaseSpider {
