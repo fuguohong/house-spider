@@ -54,6 +54,9 @@ module.exports = class LianjiaErshou extends BaseSpider {
   getNext () {
     this.runningComunity.clear()
     let next = this.nextPage
+    if (!next) {
+      return null
+    }
     if (!next.endsWith('/')) {
       next = next + '/'
     }
