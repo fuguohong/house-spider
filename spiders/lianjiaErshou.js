@@ -117,7 +117,7 @@ module.exports = class LianjiaErshou extends BaseSpider {
       count++
       return house
     }))
-    logger.info('列表页爬取完成:%s  共存储房源%d个', res.config.url, count)
+    logger.info('列表页爬取完成:%s  共存储房源%d个，当前区域序号:$d', res.config.url, count, this.i)
     // houseArray = houseArray.filter(h => h)
     // await this.store.saveHouse(houseArray)
   }
