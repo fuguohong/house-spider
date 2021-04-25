@@ -19,7 +19,7 @@ module.exports = {
   lianjiaErshou: {
     baseUrl: 'http://cq.lianjia.com',
     // 开始爬取页面
-    startUrl: '/ershoufang/huixing/co32sf1ba0ea80/',
+    startUrl: '/ershoufang/changshou/co32sf1ba85ea115/',
     // maxPage: 0,
     // 同时爬取几个详情
     concurrence: 8,

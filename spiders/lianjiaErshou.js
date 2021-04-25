@@ -3,9 +3,9 @@ const BaseSpider = require('./base')
 const logger = require('../logger')
 
 const areaTypes = {
-  0: 'ba0ea80',
-  1: 'ba80ea120',
-  2: 'ba120ea10000'
+  0: 'ba0ea85',
+  1: 'ba85ea115',
+  2: 'ba115ea10000'
 }
 
 module.exports = class LianjiaErshou extends BaseSpider {
@@ -33,7 +33,7 @@ module.exports = class LianjiaErshou extends BaseSpider {
       const gtArea = this.startUrl.match(/ba(\d+)ea\d+\/?$/)[ 1 ]
       if (gtArea === '0') {
         this.areaType = 0
-      } else if (gtArea === '80') {
+      } else if (gtArea === '85') {
         this.areaType = 1
       } else {
         this.areaType = 2
