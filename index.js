@@ -10,8 +10,10 @@ const spider = new Spider(config[ config.type ], store)
 
 spider.start()
   .then(() => {
+    logger.on('finish', () => {
+      process.exit(2)
+    })
     logger.info('爬取完成， 写入情况：%O', store.counts)
-    process.exit(0)
   }).catch(e => {
   logger.on('finish', () => {
     process.exit(2)
